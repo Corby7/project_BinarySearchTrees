@@ -117,4 +117,166 @@ export default class Tree {
         break;
     }
   }
+
+  find(value) {
+    if (this.root == null) {
+      throw new Error("No Binary Tree found");
+    }
+
+    let currentNode = this.root;
+
+    while (currentNode !== null) {
+      if (currentNode.data === value) {
+        console.log(`Value ${currentNode.data} found!`);
+        return currentNode;
+      }
+
+      if (value < currentNode.data) {
+        currentNode = currentNode.leftChild;
+      } else {
+        currentNode = currentNode.rightChild;
+      }
+    }
+
+    throw new Error(`Value ${value} not found in this Binary Tree`);
+  }
+
+  levelOrder(callback) {
+    if (typeof callback !== "function") {
+      throw new Error("A callback function is required");
+    }
+    if (this.root == null) {
+      throw new Error("No Binary Tree found");
+    }
+
+    const queue = [];
+    queue.push(this.root);
+
+    while (queue.length) {
+      const currentNode = queue.shift(); //remove first node in queue
+      callback(currentNode);
+      if (currentNode.leftChild != null) queue.push(currentNode.leftChild);
+      if (currentNode.rightChild != null) queue.push(currentNode.rightChild);
+    }
+  }
+
+  preOrder(callback) {
+    if (typeof callback !== "function") {
+      throw new Error("A callback function is required");
+    }
+    if (this.root == null) {
+      throw new Error("No Binary Tree found");
+    }
+
+    const order = (rootNode) => {
+      if (rootNode == null) return;
+      callback(rootNode);
+      order(rootNode.leftChild);
+      order(rootNode.rightChild);
+    };
+
+    order(this.root);
+  }
+
+  inOrder(callback) {
+    if (typeof callback !== "function") {
+      throw new Error("A callback function is required");
+    }
+    if (this.root == null) {
+      throw new Error("No Binary Tree found");
+    }
+
+    const order = (rootNode) => {
+      if (rootNode == null) return;
+      order(rootNode.leftChild);
+      callback(rootNode);
+      order(rootNode.rightChild);
+    };
+
+    order(this.root);
+  }
+
+  postOrder(callback) {
+    if (typeof callback !== "function") {
+      throw new Error("A callback function is required");
+    }
+    if (this.root == null) {
+      throw new Error("No Binary Tree found");
+    }
+
+    const order = (rootNode) => {
+      if (rootNode == null) return;
+      order(rootNode.leftChild);
+      order(rootNode.rightChild);
+      callback(rootNode);
+    };
+
+    order(this.root);
+  }
+
+  height(node) {
+    if (this.root == null) {
+      throw new Error("No Binary Tree found");
+    }
+
+    const findHeight = (node) => {
+      if (node == null) return -1;
+      let leftHeight = findHeight(node.leftChild);
+      let rightHeight = findHeight(node.rightChild);
+      return Math.max(leftHeight, rightHeight) + 1;
+    };
+
+    return findHeight(node);
+  }
+
+  depth(node) {
+    if (this.root == null) {
+      throw new Error("No Binary Tree found");
+    }
+
+    const findDepth = (node, targetNode, depth = 0) => {
+      if (node == null) return -1;
+      if (node === targetNode) return depth;
+
+      let leftDepth = findDepth(node.leftChild, targetNode, depth + 1);
+      if (leftDepth !== -1) return leftDepth;
+
+      let rightDepth = findDepth(node.rightChild, targetNode, depth + 1);
+      return rightDepth;
+    };
+
+    return findDepth(this.root, node);
+  }
+
+  isBalanced() {
+    if (this.root == null) {
+      throw new Error("No Binary Tree found");
+    }
+
+    const heightLeftSubTree = this.height(this.root.leftChild);
+    const heightRightSubTree = this.height(this.root.rightChild);
+
+    return Math.abs(heightLeftSubTree - heightRightSubTree) <= 1;
+  }
+
+  rebalance() {
+    const isBalanced = this.isBalanced();
+    if (isBalanced) {
+      console.log("Binary Tree is already balanced.");
+      return;
+    }
+
+    const array = [];
+
+    const collectValues = (node) => {
+      if (node == null) return;
+      array.push(node.data);
+      collectValues(node.leftChild);
+      collectValues(node.rightChild);
+    };
+    collectValues(this.root);
+
+    console.log(array);
+    return this.buildTree(array);
+  }
 }
